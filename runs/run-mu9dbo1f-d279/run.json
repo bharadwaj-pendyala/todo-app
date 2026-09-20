@@ -1,0 +1,96 @@
+{
+  "id": "run-mu9dbo1f-d279",
+  "request": "Let me mark important tasks and focus on those first",
+  "state": "stopped",
+  "baseCommit": "1cfd4722d399bd4634248c77019a11bd93269211",
+  "history": [
+    {
+      "state": "clarifying",
+      "at": "2026-09-20T05:21:13.573Z"
+    },
+    {
+      "state": "clarified",
+      "at": "2026-09-20T05:22:38.944Z"
+    },
+    {
+      "state": "prepared",
+      "at": "2026-09-20T05:22:48.183Z"
+    },
+    {
+      "state": "implemented",
+      "at": "2026-09-20T05:24:02.132Z"
+    },
+    {
+      "state": "stopped",
+      "at": "2026-09-20T05:24:03.468Z"
+    }
+  ],
+  "artifacts": {},
+  "questions": [
+    {
+      "id": "q1",
+      "ask": "Is 'important' a simple on/off star for each task, or do you want levels like High / Medium / Low?",
+      "why": "On/off gives one star button per task and one sort rule. Levels need a picker on every task, three-way sorting, and a choice about what a brand-new task defaults to."
+    },
+    {
+      "id": "q2",
+      "ask": "Should important tasks always jump to the top of the one list automatically, or should the list stay in its current order with a 'show only important' switch you turn on when you want to focus?",
+      "why": "Auto-sort changes the order of the list you see every time. A switch leaves the list alone and adds a filter control. These are different screens and different work."
+    },
+    {
+      "id": "q3",
+      "ask": "Once you tick an important task as done, should it stay pinned at the top or drop below the tasks still to do?",
+      "why": "Decides whether completed items keep occupying the focus area at the top, and whether 'done' or 'important' wins when sorting."
+    }
+  ],
+  "answers": [
+    {
+      "id": "q1",
+      "ask": "Is 'important' a simple on/off star for each task, or do you want levels like High / Medium / Low?",
+      "why": "On/off gives one star button per task and one sort rule. Levels need a picker on every task, three-way sorting, and a choice about what a brand-new task defaults to.",
+      "answer": "Just on and off. Important or Normal."
+    },
+    {
+      "id": "q2",
+      "ask": "Should important tasks always jump to the top of the one list automatically, or should the list stay in its current order with a 'show only important' switch you turn on when you want to focus?",
+      "why": "Auto-sort changes the order of the list you see every time. A switch leaves the list alone and adds a filter control. These are different screens and different work.",
+      "answer": "A separate view. Keep the current order."
+    },
+    {
+      "id": "q3",
+      "ask": "Once you tick an important task as done, should it stay pinned at the top or drop below the tasks still to do?",
+      "why": "Decides whether completed items keep occupying the focus area at the top, and whether 'done' or 'important' wins when sorting.",
+      "answer": "Completion and ordering should not change at all."
+    }
+  ],
+  "spec": {
+    "summary": "Add an on/off important flag per task, plus a filter view that shows only important tasks without changing list order.",
+    "acceptance": [
+      "Each task in the list has an important control that toggles between Important and Normal.",
+      "Toggling a task's important state persists across a page reload.",
+      "A newly added task starts as Normal.",
+      "A control on the page switches between showing all tasks and showing only important tasks.",
+      "With the important-only view on, the list shows every important task and no normal task.",
+      "With the important-only view on, the visible important tasks appear in the same relative order as in the all-tasks view.",
+      "Switching the important-only view off restores the full list in its original order.",
+      "Important tasks are visually distinguishable from normal tasks in the all-tasks view.",
+      "GET /api/tasks returns the important state for each task.",
+      "PATCH /api/tasks/:id accepts an important boolean and returns the updated task."
+    ],
+    "unchanged": [
+      "Tasks stay ordered by id in the all-tasks view; important tasks do not move to the top.",
+      "Marking a task done or not done works as before and persists across reload.",
+      "Completing a task does not move it in the list and does not change its important state.",
+      "Toggling important does not change a task's done state.",
+      "Adding a task appends it at the end of the list as before.",
+      "Seeded tasks Task A, Task B, and Renew the domain remain listed with their existing done states.",
+      "POST /api/tasks with an empty title still returns 400, and PATCH on an unknown id still returns 404.",
+      "/health still returns {\"status\":\"ok\"}."
+    ],
+    "check": "An automated browser check must prove: toggling a task to important persists across reload; turning on the important-only view shows exactly the important tasks in their original relative order; turning it off restores the full list in id order; and completing a task changes neither list position nor important state.",
+    "journey": "mark-important-and-filter"
+  },
+  "branch": "harness/run-mu9dbo1f-d279",
+  "diffstat": "db/seed.js        |  5 ++--\n harness/run.mjs   | 86 +++++++++++++++++++++++++++++++++++++++++++++++++++++--\n public/app.js     | 35 ++++++++++++++++++----\n public/index.html |  4 +++\n public/style.css  | 16 +++++++++++\n server.js         | 13 ++++++++-\n 6 files changed, 148 insertions(+), 11 deletions(-)",
+  "reason": "a required check failed"
+}
