@@ -40,11 +40,14 @@ const sh = (cmd, opts = {}) =>
   execSync(cmd, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], ...opts });
 
 function freePort() {
-  const server = createServer();
-  server.listen(0, '127.0.0.1');
-  const { port } = server.address();
-  server.close();
-  return port;
+  return new Promise((resolve, reject) => {
+    const server = createServer();
+    server.on('error', reject);
+    server.listen(0, '127.0.0.1', () => {
+      const { port } = server.address();
+      server.close(() => resolve(port));
+    });
+  });
 }
 
 function claude(prompt, { json = false, edits = false } = {}) {
@@ -122,13 +125,13 @@ function answer(id, answers) {
   return run;
 }
 
-function execute(id) {
+async function execute(id) {
   const run = loadRun(id);
   if (!run.spec) throw new Error(`run ${id} has no agreed spec yet`);
 
   const branch = `harness/${run.id}`;
   const artifacts = `${process.cwd()}/${RUNS_DIR}/${run.id}/artifacts`;
-  const port = freePort();
+  const port = await freePort();
   const env = { ...process.env, PORT: String(port), ARTIFACTS_DIR: artifacts };
 
   mkdirSync(artifacts, { recursive: true });
@@ -247,4 +250,4 @@ if (values.help || !commands[command]) {
   node harness/run.mjs show <run-id>`);
   process.exit(values.help ? 0 : 1);
 }
-commands[command]();
+await commands[command]();
