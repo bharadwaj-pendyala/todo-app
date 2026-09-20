@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+JOURNEY="${1:?usage: record-journey <name>}"
+OUT="${ARTIFACTS_DIR:-/run-output}"
+
+mkdir -p "$OUT"
+JOURNEY="$JOURNEY" ARTIFACTS_DIR="$OUT" npx playwright test \
+  --config=playwright.record.config.ts \
+  --reporter=list \
+  "journeys/${JOURNEY}.journey.ts"

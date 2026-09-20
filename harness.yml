@@ -1,0 +1,7 @@
+setup: ./scripts/setup-app
+start: ./scripts/start-app
+ready: http://127.0.0.1:3000/health
+checks:
+  - ./scripts/check-app
+record: ./scripts/record-journey
+artifacts: /run-output
