@@ -50,6 +50,8 @@ button {
   cursor: pointer;
 }
 
+#remaining-count { color: var(--muted); margin-bottom: 0.75rem; }
+
 #tasks { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
 
 li {

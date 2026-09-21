@@ -1,6 +1,7 @@
 const list = document.querySelector('#tasks');
 const form = document.querySelector('#new-task');
 const titleInput = document.querySelector('#title');
+const remainingCount = document.querySelector('#remaining-count');
 
 async function loadTasks() {
   const response = await fetch('/api/tasks');
@@ -9,6 +10,8 @@ async function loadTasks() {
 
 function render(tasks) {
   list.replaceChildren(...tasks.map(toListItem));
+  const remaining = tasks.filter((task) => !task.done).length;
+  remainingCount.textContent = `${remaining} remaining`;
 }
 
 function toListItem(task) {
