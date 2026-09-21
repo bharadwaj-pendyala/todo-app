@@ -1,14 +1,25 @@
 const list = document.querySelector('#tasks');
 const form = document.querySelector('#new-task');
 const titleInput = document.querySelector('#title');
+const tabAll = document.querySelector('#tab-all');
+const tabImportant = document.querySelector('#tab-important');
+
+let tasks = [];
+let view = 'all';
 
 async function loadTasks() {
   const response = await fetch('/api/tasks');
-  render(await response.json());
+  tasks = await response.json();
+  renderView();
 }
 
-function render(tasks) {
-  list.replaceChildren(...tasks.map(toListItem));
+function renderView() {
+  const visible = view === 'important' ? tasks.filter((task) => task.important) : tasks;
+  render(visible);
+}
+
+function render(visibleTasks) {
+  list.replaceChildren(...visibleTasks.map(toListItem));
 }
 
 function toListItem(task) {
@@ -26,7 +37,18 @@ function toListItem(task) {
   title.className = 'title';
   title.textContent = task.title;
 
-  item.append(checkbox, title);
+  const importantToggle = document.createElement('button');
+  importantToggle.type = 'button';
+  importantToggle.className = task.important ? 'important-toggle active' : 'important-toggle';
+  importantToggle.textContent = task.important ? '★' : '☆';
+  importantToggle.setAttribute('aria-pressed', String(Boolean(task.important)));
+  importantToggle.setAttribute(
+    'aria-label',
+    task.important ? `Unmark ${task.title} important` : `Mark ${task.title} important`,
+  );
+  importantToggle.addEventListener('click', () => toggleImportant(task.id, !task.important));
+
+  item.append(checkbox, title, importantToggle);
   return item;
 }
 
@@ -38,6 +60,27 @@ async function toggleDone(id, done) {
   });
   await loadTasks();
 }
+
+async function toggleImportant(id, important) {
+  await fetch(`/api/tasks/${id}`, {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ important }),
+  });
+  await loadTasks();
+}
+
+function setView(next) {
+  view = next;
+  tabAll.classList.toggle('active', view === 'all');
+  tabAll.setAttribute('aria-pressed', String(view === 'all'));
+  tabImportant.classList.toggle('active', view === 'important');
+  tabImportant.setAttribute('aria-pressed', String(view === 'important'));
+  renderView();
+}
+
+tabAll.addEventListener('click', () => setView('all'));
+tabImportant.addEventListener('click', () => setView('important'));
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();

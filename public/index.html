@@ -13,6 +13,10 @@
     <input id="title" name="title" placeholder="Add a task" autocomplete="off" aria-label="Task title">
     <button type="submit">Add</button>
   </form>
+  <div class="view-tabs">
+    <button type="button" id="tab-all" class="view-tab active" aria-pressed="true">All</button>
+    <button type="button" id="tab-important" class="view-tab" aria-pressed="false">Important</button>
+  </div>
   <ul id="tasks" aria-label="Task list"></ul>
 </main>
 <script type="module" src="/app.js"></script>
