@@ -26,7 +26,16 @@ function toListItem(task) {
   title.className = 'title';
   title.textContent = task.title;
 
-  item.append(checkbox, title);
+  const star = document.createElement('button');
+  star.type = 'button';
+  star.className = task.important ? 'star important' : 'star';
+  star.textContent = task.important ? '★' : '☆';
+  star.setAttribute('aria-pressed', String(Boolean(task.important)));
+  star.setAttribute('aria-label', `Mark ${task.title} important`);
+  star.setAttribute('data-testid', `star-${task.id}`);
+  star.addEventListener('click', () => toggleImportant(task.id, !task.important));
+
+  item.append(checkbox, title, star);
   return item;
 }
 
@@ -35,6 +44,15 @@ async function toggleDone(id, done) {
     method: 'PATCH',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ done }),
+  });
+  await loadTasks();
+}
+
+async function toggleImportant(id, important) {
+  await fetch(`/api/tasks/${id}`, {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ important }),
   });
   await loadTasks();
 }
