@@ -1,40 +1,51 @@
 const list = document.querySelector('#tasks');
 const form = document.querySelector('#new-task');
 const titleInput = document.querySelector('#title');
+const filterImportant = document.querySelector('#filter-important');
+
+let tasks = [];
 
 async function loadTasks() {
   const response = await fetch('/api/tasks');
-  render(await response.json());
+  tasks = await response.json();
+  render();
 }
 
-function render(tasks) {
-  list.replaceChildren(...tasks.map(toListItem));
+function render() {
+  const visible = filterImportant.checked ? tasks.filter((task) => task.important) : tasks;
+  list.replaceChildren(...visible.map(toListItem));
 }
 
 function toListItem(task) {
   const item = document.createElement('li');
-  item.className = task.done ? 'done' : '';
+  item.className = [task.done ? 'done' : '', task.important ? 'important' : ''].filter(Boolean).join(' ');
   item.dataset.id = task.id;
 
-  const checkbox = document.createElement('input');
-  checkbox.type = 'checkbox';
-  checkbox.checked = Boolean(task.done);
-  checkbox.setAttribute('aria-label', `Mark ${task.title} complete`);
-  checkbox.addEventListener('change', () => toggleDone(task.id, checkbox.checked));
+  const doneCheckbox = document.createElement('input');
+  doneCheckbox.type = 'checkbox';
+  doneCheckbox.checked = Boolean(task.done);
+  doneCheckbox.setAttribute('aria-label', `Mark ${task.title} complete`);
+  doneCheckbox.addEventListener('change', () => toggleField(task.id, 'done', doneCheckbox.checked));
+
+  const importantCheckbox = document.createElement('input');
+  importantCheckbox.type = 'checkbox';
+  importantCheckbox.checked = Boolean(task.important);
+  importantCheckbox.setAttribute('aria-label', `Mark ${task.title} important`);
+  importantCheckbox.addEventListener('change', () => toggleField(task.id, 'important', importantCheckbox.checked));
 
   const title = document.createElement('span');
   title.className = 'title';
   title.textContent = task.title;
 
-  item.append(checkbox, title);
+  item.append(doneCheckbox, importantCheckbox, title);
   return item;
 }
 
-async function toggleDone(id, done) {
+async function toggleField(id, field, value) {
   await fetch(`/api/tasks/${id}`, {
     method: 'PATCH',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ done }),
+    body: JSON.stringify({ [field]: value }),
   });
   await loadTasks();
 }
@@ -52,5 +63,7 @@ form.addEventListener('submit', async (event) => {
   titleInput.value = '';
   await loadTasks();
 });
+
+filterImportant.addEventListener('change', render);
 
 loadTasks();

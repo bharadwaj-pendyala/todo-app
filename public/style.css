@@ -50,6 +50,15 @@ button {
   cursor: pointer;
 }
 
+#filter-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
 #tasks { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
 
 li {
@@ -61,6 +70,8 @@ li {
   border: 1px solid var(--line);
   border-radius: 8px;
 }
+
+li.important { border-color: var(--accent); }
 
 li.done .title { color: var(--muted); text-decoration: line-through; }
 
