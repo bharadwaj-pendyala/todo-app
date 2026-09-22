@@ -64,6 +64,9 @@ li {
 
 li.done .title { color: var(--muted); text-decoration: line-through; }
 
+li.important { background: #3a2a12; border-color: #a5711c; }
+li.important .title { font-weight: 700; }
+
 .title { flex: 1; }
 
 input[type="checkbox"] { width: 1.1rem; height: 1.1rem; flex: none; accent-color: var(--accent); }
