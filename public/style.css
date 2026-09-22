@@ -67,3 +67,22 @@ li.done .title { color: var(--muted); text-decoration: line-through; }
 .title { flex: 1; }
 
 input[type="checkbox"] { width: 1.1rem; height: 1.1rem; flex: none; accent-color: var(--accent); }
+
+.star {
+  flex: none;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.star.important { color: var(--accent); }
