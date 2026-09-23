@@ -12,13 +12,14 @@ db.exec(`
   CREATE TABLE tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
-    done INTEGER NOT NULL DEFAULT 0
+    done INTEGER NOT NULL DEFAULT 0,
+    important INTEGER NOT NULL DEFAULT 0
   )
 `);
 
-const insert = db.prepare('INSERT INTO tasks (title, done) VALUES (?, ?)');
-insert.run('Task A', 0);
-insert.run('Task B', 0);
-insert.run('Renew the domain', 1);
+const insert = db.prepare('INSERT INTO tasks (title, done, important) VALUES (?, ?, ?)');
+insert.run('Task A', 0, 0);
+insert.run('Task B', 0, 0);
+insert.run('Renew the domain', 1, 0);
 
 console.log(`seeded ${DB_PATH}`);
