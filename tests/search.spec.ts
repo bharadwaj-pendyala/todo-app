@@ -29,3 +29,11 @@ test('a search with no matches says so', async ({ page }) => {
   await expect(page.getByRole('listitem')).toHaveCount(0);
   await expect(page.getByText('No matching tasks')).toBeVisible();
 });
+
+test('a search over an empty task list says nothing matches', async ({ page }) => {
+  await page.route('/api/tasks', (route) => route.fulfill({ json: [] }));
+  await page.goto('/');
+  await expect(page.getByText('No matching tasks')).toBeHidden();
+  await page.getByLabel('Search tasks').fill('zzz');
+  await expect(page.getByText('No matching tasks')).toBeVisible();
+});

@@ -16,7 +16,7 @@ function render() {
   const query = searchInput.value.trim().toLowerCase();
   const matchingTasks = tasks.filter((task) => task.title.toLowerCase().includes(query));
   list.replaceChildren(...matchingTasks.map(toListItem));
-  noMatches.hidden = matchingTasks.length > 0 || tasks.length === 0;
+  noMatches.hidden = matchingTasks.length > 0 || !query;
 }
 
 function toListItem(task) {
