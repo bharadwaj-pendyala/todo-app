@@ -34,7 +34,8 @@ open(dst, 'w').write(text)
 PY
 
 herdr pane run "$REVIEWER" "cd '$WT' && codex --sandbox workspace-write --ask-for-approval never -c check_for_update_on_startup=false"
-herdr pane run "$BUILDER" "cd '$WT' && PORT=$PORT claude ${BUILDER_MODEL:+--model $BUILDER_MODEL} --permission-mode auto --allowedTools 'Bash(herdr *)' 'Bash(git push *)' 'Bash(gh pr create *)' 'Read .agent-team/builder.md and follow it.'"
+# The prompt goes first: --allowedTools takes every argument after it.
+herdr pane run "$BUILDER" "cd '$WT' && PORT=$PORT claude 'Read .agent-team/builder.md and follow it.' ${BUILDER_MODEL:+--model $BUILDER_MODEL} --permission-mode auto --allowedTools 'Bash(herdr *)' 'Bash(git push *)' 'Bash(gh pr create *)'"
 
 # Claude Code asks once whether to trust a new folder, and its default answer is "No, exit".
 if herdr wait output "$BUILDER" --match 'trust this folder' --timeout 15000 > /dev/null 2>&1; then
