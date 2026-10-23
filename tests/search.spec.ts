@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 let tag: string;
 
@@ -35,18 +35,30 @@ test('a query with no match shows an empty list', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
+// Marks the current items so the wait ends only after the refresh replaces them.
+async function waitForListRefresh(page: Page, action: () => Promise<void>) {
+  await page.locator('#tasks li').evaluateAll((items) => items.forEach((item) => (item.dataset.stale = 'true')));
+  const refreshed = page.waitForResponse(
+    (response) => response.url().endsWith('/api/tasks') && response.request().method() === 'GET',
+  );
+  await action();
+  await refreshed;
+  await expect(page.locator('#tasks li[data-stale]')).toHaveCount(0);
+}
+
 test('the search stays applied after a toggle or an add', async ({ page }) => {
   await page.goto('/');
   const search = page.getByLabel('Search tasks');
+  const matchingTitles = [`Buy ${tag.toUpperCase()}`, `Pour ${tag}`];
+  await expect(page.locator('#tasks li')).not.toHaveCount(0);
   await search.fill(tag);
 
-  await page.getByRole('checkbox', { name: `Mark Pour ${tag} complete` }).check();
-  await expect(page.getByRole('checkbox', { name: `Mark Pour ${tag} complete` })).toBeChecked();
-  await expect(page.locator('#tasks li')).toHaveCount(2);
+  await waitForListRefresh(page, () => page.getByRole('checkbox', { name: `Mark Pour ${tag} complete` }).check());
+  await expect(page.locator('#tasks li')).toHaveText(matchingTitles);
+  await expect(search).toHaveValue(tag);
 
   await page.getByLabel('Task title').fill(`Water plants ${Date.now()}`);
-  await page.getByRole('button', { name: 'Add' }).click();
-  await expect(page.getByLabel('Task title')).toHaveValue('');
-  await expect(page.locator('#tasks li')).toHaveCount(2);
+  await waitForListRefresh(page, () => page.getByRole('button', { name: 'Add' }).click());
+  await expect(page.locator('#tasks li')).toHaveText(matchingTitles);
   await expect(search).toHaveValue(tag);
 });
