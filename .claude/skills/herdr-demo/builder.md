@@ -10,8 +10,7 @@ Idea: {{IDEA}}
 2. Build. Implement the spec. Add a Playwright test for each "Done when" bullet. Run npm test (PORT is already {{PORT}}) until it passes. Commit. Do not push. Save the last npm test output to .agent-team/test-N.txt, where N is the round.
 
 3. Review. For round N (start at 1):
-   herdr agent send {{REVIEWER}} "Read .claude/skills/herdr-demo/reviewer.md. Round N."
-   herdr pane send-keys {{REVIEWER}} Enter
+   herdr agent send {{REVIEWER}} "Read .claude/skills/herdr-demo/reviewer.md. Round N." && sleep 2 && herdr pane send-keys {{REVIEWER}} Enter
    Then wait for the review file:
    until grep -q '^VERDICT:' .agent-team/review-N.md 2>/dev/null; do sleep 3; done
    Read it. Tell the human the verdict in one line.
