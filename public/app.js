@@ -1,14 +1,19 @@
 const list = document.querySelector('#tasks');
 const form = document.querySelector('#new-task');
 const titleInput = document.querySelector('#title');
+const searchInput = document.querySelector('#search');
+let tasks = [];
 
 async function loadTasks() {
   const response = await fetch('/api/tasks');
-  render(await response.json());
+  tasks = await response.json();
+  render();
 }
 
-function render(tasks) {
-  list.replaceChildren(...tasks.map(toListItem));
+function render() {
+  const query = searchInput.value.trim().toLowerCase();
+  const matches = tasks.filter((task) => task.title.toLowerCase().includes(query));
+  list.replaceChildren(...matches.map(toListItem));
 }
 
 function toListItem(task) {
@@ -52,5 +57,7 @@ form.addEventListener('submit', async (event) => {
   titleInput.value = '';
   await loadTasks();
 });
+
+searchInput.addEventListener('input', render);
 
 loadTasks();
