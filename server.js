@@ -16,6 +16,20 @@ app.get('/api/tasks', (_req, res) => {
   res.json(db.prepare('SELECT * FROM tasks ORDER BY id').all());
 });
 
+function toCsvField(value) {
+  const text = String(value);
+  return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+}
+
+app.get('/api/tasks.csv', (_req, res) => {
+  const tasks = db.prepare('SELECT * FROM tasks ORDER BY id').all();
+  const rows = tasks.map((task) => [task.id, task.title, Boolean(task.done)].map(toCsvField).join(','));
+
+  res.type('text/csv');
+  res.attachment('tasks.csv');
+  res.send(['id,title,done', ...rows].map((row) => `${row}\r\n`).join(''));
+});
+
 app.post('/api/tasks', (req, res) => {
   const title = String(req.body.title ?? '').trim();
   if (!title) return res.status(400).json({ error: 'title is required' });
