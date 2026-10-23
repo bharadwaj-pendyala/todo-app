@@ -3,3 +3,4 @@ db/*.db
 run-output/
 test-results/
 playwright-report/
+.agent-team/
