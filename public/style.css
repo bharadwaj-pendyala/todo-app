@@ -50,6 +50,10 @@ button {
   cursor: pointer;
 }
 
+#search { width: 100%; margin-bottom: 1rem; }
+
+#no-matches { color: var(--muted); }
+
 #tasks { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
 
 li {
