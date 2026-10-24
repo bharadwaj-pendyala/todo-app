@@ -25,8 +25,12 @@ test('the filter stays applied after completing a task', async ({ page }) => {
   await page.getByLabel('Search tasks').fill('task');
   const checkbox = page.getByRole('checkbox', { name: 'Mark Task A complete' });
   const wasChecked = await checkbox.isChecked();
+  const reload = page.waitForResponse(
+    (response) => response.url().endsWith('/api/tasks') && response.request().method() === 'GET',
+  );
   await checkbox.click();
-  await expect(checkbox).toBeChecked({ checked: !wasChecked });
+  await reload;
+  await expect(page.locator('li', { hasText: 'Task A' })).toHaveClass(wasChecked ? '' : 'done');
   await expect(page.getByText('Task B')).toBeVisible();
   await expect(page.getByText('Renew the domain')).toBeHidden();
 });
