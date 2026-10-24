@@ -47,7 +47,7 @@ Write your own instruction for Codex. It must tell Codex to:
 - list each problem with its file and line
 - write the review to `.agent-team/review-<round>.md`, ending with exactly one line: `VERDICT: APPROVE` or `VERDICT: REQUEST CHANGES`
 
-Send it in one line. Put the details in a file if it is long, and tell Codex to read the file. Herdr needs a pause before Enter:
+Write it to `.agent-team/review-request.md`. Send Codex one line that tells it to read that file and names the round. Herdr needs a pause before Enter:
 
 ```
 herdr agent send <codex pane> "<instruction>" && sleep 2 && herdr pane send-keys <codex pane> Enter
